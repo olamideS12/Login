@@ -26,10 +26,10 @@ def create_table():
 create_table()
 
 @app.route("/")
-def login();
+def login():
     return render_template("login.html")
 
-@app.route("register.html", methods=["GET","POST"])
+@app.route("/register", methods=["GET","POST"])
 def register():
     msg =""
     if request.method == "post":
@@ -39,18 +39,21 @@ def register():
         db = get_db()
         cursor = db.cursor()
 
-        cursor.execute("SELECT * FROM Users Were Name=?", username)
+        cursor.execute("SELECT * FROM Users WHERE Name=?", (username,))
         account = cursor.fetchone()
         if account:
             msg = "Account already exists"
         else:
-            cursor.execute("INSERT INTO Users (username, password) VALUES (?, ?)" ,username, password) 
+            cursor.execute("INSERT INTO Users (NAME, Password) VALUES (?, ?)" ,(username, password) )
+            db.commit()
+            msg = "You have successfully registered"
+        db.close()
     return render_template("register.html", msg=msg)
 
-@app.route("Welcome.html")
+@app.route("/Welcome")
 def welcome():
     return render_template("welcome.html")
 
 
 
-app.run()
+app.run(debug=True)
